@@ -5,6 +5,7 @@ const cors = require('cors');
 const axios = require('axios');
 const PORT = process.env.PORT || 3000;
 
+app.use(express.json());
 app.use(cors());
 app.use('*', (req, res) => {
     const url = req.params[0].replace(/^\//, '');
@@ -12,7 +13,12 @@ app.use('*', (req, res) => {
     if (!url) {
         return res.send('url을 입력하세요. ex) /https://example.com/');
     }
-    axios[req.method.toLowerCase()](url)
+    axios({
+        url,
+        method: req.method.toLowerCase(),
+        headers: req.headers,
+        data: req.body
+    })
     .then(({data}) => {
         res.type(typeof data === 'object' ? "json" : "html");
         res.send(data);
